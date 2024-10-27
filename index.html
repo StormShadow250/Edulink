@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edulink</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Welcome to Edulink</h1>
+        </header>
+
+        <main>
+            <h2>Are you a teacher or a student?</h2>
+            <button onclick="selectUserType('teacher')">Teacher</button>
+            <button onclick="selectUserType('student')">Student</button>
+
+            <div id="user-type-form" style="display: none;">
+                <div id="address-section">
+                    <h3 id="form-title"></h3>
+                    <label for="address">Address:</label>
+                    <input type="text" id="address" name="address" required>
+                    <button onclick="nextStep()">Next</button>
+                </div>
+
+                <div id="teacher-specific" style="display: none;">
+                    <label for="subject">Subject you teach:</label>
+                    <input type="text" id="subject" name="subject">
+                    <button onclick="submitForm()">Submit</button>
+                </div>
+
+                <div id="student-specific" style="display: none;">
+                    <label for="learning-subject">Subject you want to learn:</label>
+                    <input type="text" id="learning-subject" name="learning-subject">
+                    <button onclick="submitForm()">Submit</button>
+                </div>
+            </div>
+
+            <div id="user-type-content"></div>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 Edulink</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
