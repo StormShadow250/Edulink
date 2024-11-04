@@ -1,54 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edulink</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Teacher and Student Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
-
 <body>
-    <div class="container">
-        <header>
-            <h1>Welcome to Edulink</h1>
-        </header>
-
-        <main>
-            <h2>Are you a teacher or a student?</h2>
-            <button onclick="selectUserType('teacher')">Teacher</button>
-            <button onclick="selectUserType('student')">Student</button>
-
-            <div id="user-type-form" style="display: none;">
-                <div id="address-section">
-                    <h3 id="form-title"></h3>
-                    <label for="address">Address:</label>
-                    <input type="text" id="address" name="address" required>
-                    <button onclick="nextStep()">Next</button>
-                </div>
-
-                <div id="teacher-specific" style="display: none;">
-                    <label for="subject">Subject you teach:</label>
-                    <input type="text" id="subject" name="subject">
-                    <button onclick="submitForm()">Submit</button>
-                </div>
-
-                <div id="student-specific" style="display: none;">
-                    <label for="learning-subject">Subject you want to learn:</label>
-                    <input type="text" id="learning-subject" name="learning-subject">
-                    <button onclick="submitForm()">Submit</button>
-                </div>
-            </div>
-
-            <div id="user-type-content"></div>
-        </main>
-
-        <footer>
-            <p>&copy; 2024 Edulink</p>
-        </footer>
+    <h1>User Registration</h1>
+    <div>
+        <label for="user-type">Select User Type:</label>
+        <select id="user-type" onchange="selectUserType(this.value)">
+            <option value="">--Select--</option>
+            <option value="teacher">Teacher</option>
+            <option value="student">Student</option>
+        </select>
     </div>
 
-    <script src="script.js"></script>
-</body>
+    <form id="user-type-form" class="hidden">
+        <h2 id="form-title"></h2>
+        <div id="address-section">
+            <h3>Address Information</h3>
+            <label for="street">Street:</label>
+            <input type="text" id="street" required>
+            <br>
+            <label for="locality">Locality:</label>
+            <input type="text" id="locality" required>
+            <br>
+            <label for="city">City:</label>
+            <input type="text" id="city" required>
+            <br>
+            <label for="country">Country:</label>
+            <input type="text" id="country" required>
+            <br>
+        </div>
 
+        <div id="teacher-specific" class="hidden">
+            <h3>Teacher Information</h3>
+            <label for="name">Name:</label>
+            <input type="text" id="name" required>
+            <br>
+            <label for="phone">Phone Number:</label>
+            <input type="text" id="phone" required>
+            <br>
+            <label for="subject">Subject you teach:</label>
+            <input type="text" id="subject" required>
+        </div>
+
+        <div id="student-specific" class="hidden">
+            <h3>Student Information</h3>
+            <label for="learning-subject">Subject you want to learn:</label>
+            <input type="text" id="learning-subject" required>
+        </div>
+
+        <button type="button" onclick="nextStep()">Next</button>
+        <button type="button" onclick="submitForm()">Submit</button>
+    </form>
+
+    <script>
+        const teachers = [];
+        let userType = '';
+
+        function selectUserType(type) {
+            userType = type; // Set the user type
+            document.getElementById('user-type-form').style.display = 'block'; // Show the form
+            document.getElementById('form-title').innerText = `Please enter your details as a ${type}`;
+
+            // Hide all specific sections initially
+            document.getElementById('teacher-specific').style.display = 'none';
+            document.getElementById('student-specific').style.display = 'none';
+
+            // Show address section
+            document.getElementById('address-section').style.display = 'block';
+        }
+
+        function nextStep() {
+            const street = document.getElementById('street').value;
+            const locality = document.getElementById('locality').value;
+            const city = document.getElementById('city').value;
+            const country = document.getElementById('country').value;
+
+            // Validate address input
+            if (!street || !locality || !city || !country) {
+                alert('Please fill in all address fields.');
+                return;
+            }
+
+            // Hide the address section
+            document.getElementById('address-section').style.display = 'none';
+
+            // Show the relevant section based on user type
+            if (userType === 'teacher') {
+                document.getElementById('teacher-specific').style.display = 'block';
+            } else if (userType === 'student') {
+                document.getElementById('student-specific').style.display = 'block';
+            }
+        }
+
+        function submitForm() {
+            const street = document.getElementById('street').value;
+            const locality = document.getElementById('locality').value;
+            const city = document.getElementById('city').value;
+            const country = document.getElementById('country').value;
+            const fullAddress = `${street}, ${locality}, ${city}, ${country}`;
+
+            const name = document.getElementById('name') ? document.getElementById('name').value : '';
+            const phone = document.getElementById('phone') ? document.getElementById('phone').value : '';
+            const subject = document.getElementById('subject') ? document.getElementById('subject').value : '';
+            const learningSubject = document.getElementById('learning-subject') ? document.getElementById('learning-subject').value : '';
+
+            // Validate additional input based on user type
+            if (userType === 'teacher' && (!name || !phone || !subject)) {
+                alert('Please fill in all teacher fields (name, phone, subject).');
+                return;
+            }
+
+            if (userType === 'student' && !learningSubject) {
+                alert('Please enter the subject you want to learn.');
+                return;
+            }
+
+            // Handle form submission based on user type
+            if (userType === 'teacher') {
+                // Save teacher data
+                teachers.push({ fullAddress, name, phone, subject });
+                localStorage.setItem('teachers', JSON.stringify(teachers)); // Store in local storage
+                alert('Teacher details submitted successfully!');
+            } else if (userType === 'student') {
+                // Redirect to results page with the learning subject
+                const url = `results.html?subject=${encodeURIComponent(learningSubject)}`;
+                window.location.href = url; // Redirect to results page
+            }
+
+            // Reset and hide the form
+            document.getElementById('user-type-form').reset();
+            document.getElementById('user-type-form').style.display = 'none';
+        }
+    </script>
+</body>
 </html>
